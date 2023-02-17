@@ -1,0 +1,39 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+n= 25
+x= np.linspace(-4,4,n)
+y= np.linspace(-4,4,n)
+X,Y= np.meshgrid(x,y)
+centro= np.array([0.0,0.0])
+
+def PotFlujo(x, y,R,V):
+    return V*x*(1+ ((R**2)/(x**2)+(y**2)))
+
+
+def VParx(pot, x, y, R, V, h):
+    d= (pot(x+h,y,R,V)-pot(x-h,y,R,V))/(2*h)
+    return d
+
+
+def VPary(pot, x, y, R, V, h):
+    d= (pot(x,y+h,R,V)-pot(x,y-h,R,V))/(2*h)
+    return d
+
+
+Vx= np.zeros((n,n))
+Vy= np.zeros((n,n))
+
+for i in range(n):
+    for j in range(n):
+        if (x[i]**2) + (y[j]**2) > 4:
+            Vx[i,j]= VParx(PotFlujo,x[i],y[j],2,2,0.001)
+            Vy[i,j]= -VPary(PotFlujo,x[i],y[j],2,2,0.001)
+
+fig= plt.figure(figsize=(8,8))
+ax= fig.add_subplot(222)
+
+for i in range(n):
+    for j in range(n):
+        ax.quiver(x[i],y[j],Vx[i,j],Vy[i,j])
