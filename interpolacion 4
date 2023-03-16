@@ -1,0 +1,44 @@
+
+import pandas as pd
+import numpy as np
+import sympy as sp
+import matplotlib.pyplot as plt
+
+datos= pd.read_csv("https://raw.githubusercontent.com/asegura4488/Database/main/MetodosComputacionalesReforma/Parabolico.csv", dtype= float)
+X= np.float64(datos.X)
+Y= np.float64(datos.Y)
+x_= np.linspace(1.4,5.6,100)
+x= sp.Symbol("x", real= True)
+
+def Lagrange(x,xi,j):
+  prod= 1
+  n= len(xi)
+  for i in range (n):
+     if i != j: 
+       prod *= (x-xi[i])/(xi[j]-xi[i])
+  return prod
+
+def Interpolate (x, xi, yi):
+  sum_ = 0
+  n= len(xi)
+  for j in range (n):
+    sum_ += yi[j] * Lagrange(x,xi,j)
+  return sum_
+
+y_ = Interpolate(x_, X, Y)
+plt.plot(x_,y_)
+
+# ecuación de trayectoria = -x**2 * (g/(2*v**2*cos**2)) + x * (tan) + y[0]
+
+y = Interpolate(x, X, Y)
+print(sp.simplify(y))
+
+# de la ec. interpolada se obtiene
+tan= 0.363970234266202
+
+theta= np.arctan(tan)
+print(theta*360/(2*np.pi))
+
+v = np.sqrt( 9.8 /  (0.0554912422401579 * 2 * np.cos(theta)))
+print(v)
+

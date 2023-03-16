@@ -1,0 +1,61 @@
+import numpy as np
+import sympy as sp
+import matplotlib.pyplot as plt
+
+
+x= sp.Symbol("x", real= True)
+
+
+def Polinomio (x, n):
+    f= ((np.e**(-x))*(x**n))
+    return (np.e**(x)/np.math.factorial(n)) * (sp.diff(f, x, n))
+
+def DPolinomio(p, x):
+    return sp.diff(p,x)
+
+def p(polinomio, X):
+    poly= sp.lambdify(x, polinomio)
+    return poly(X)
+
+def dp(dpolinomio, X):
+    dpoly= sp.lambdify(x, dpolinomio)
+    return dpoly(X)
+
+
+polinomios= []
+for i in range(20):
+    polinomio= Polinomio(x, i)
+    polinomios.append(polinomio)
+    
+
+for n in range(1,20):
+    m= 1000
+    x_= np.linspace(0, 75, m)
+    polinomio= polinomios[n]
+    y= p(polinomio, x_)
+    plt.plot(x_,y)
+    plt.xlim((0,75))
+    plt.ylim((-60,60))
+    
+# De la gráfica se puede ver que las raices hasta el polinomio 20 dejan de aparecer alrededor de x= 65
+raices= []
+
+for l in range(1, 20):
+    polinomio= polinomios[l]
+    dpolinomio= DPolinomio(polinomio, x)
+    praices= []
+    pasos= np.linspace(0, 65, 25)
+    for X in pasos:
+        for k in range(10):
+            if dp(dpolinomio, X) != 0:
+                X1 = round(X - (p(polinomio, X) / dp(dpolinomio, X)),5)
+                X2 = round(X1 - (p(polinomio, X1) / dp(dpolinomio, X1)),5)
+                if abs(X1) - abs(X2) < 0.00001 :
+                    if X2 in praices:
+                        continue
+                    else:
+                        praices.append(X2)
+    raices.append(praices)
+
+
+print(raices)      
