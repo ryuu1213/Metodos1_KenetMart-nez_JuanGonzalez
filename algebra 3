@@ -1,0 +1,22 @@
+import numpy as np
+
+def ProductoMatrices(A,B):
+    n= A.shape[0]
+    m= B.shape[1]
+    Producto= np.zeros((n,m))
+    l= A.shape[1]
+    for i in range(n):
+        for j in range(m):
+            valor = 0
+            for k in range(l):
+                valor += A[i,k] * B[k,j]
+            Producto[i,j] = valor
+                
+    return Producto
+
+A = np.array(((1,0,0), (5,1,0), (-2,3,1)))
+B = np.array(((4,-2,1), (0,3,7), (0,0,2)))
+
+print(A)
+print(B)
+print(ProductoMatrices(A, B))

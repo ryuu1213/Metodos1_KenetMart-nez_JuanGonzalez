@@ -1,0 +1,41 @@
+import numpy as np
+
+def GenerarSO3():
+    SO3 = np.zeros((3,3,3))
+    for i in range (SO3.shape[0]):
+        for j in range (SO3.shape[1]):
+            for k in range (SO3.shape[2]):
+                coord = (i, j, k)
+                if coord ==  (0, 1, 2) or coord ==  (1, 2, 0) or coord ==  (2, 0, 1):
+                    SO3[k][j][i] = 1
+                elif coord ==  (2, 1, 0) or coord ==  (0, 2, 1) or coord ==  (1, 0, 2):
+                    SO3[k][j][i] = -1
+                elif i == j or j == k or k == i:
+                    SO3[k][j][i] = 0
+    return SO3
+
+Jx = GenerarSO3()[0]
+Jy = GenerarSO3()[1]
+Jz = GenerarSO3()[2]
+
+#print(Jx)
+#print(Jy)
+#print(Jz)
+
+# El gupo fue generado usando el álgebra de Lie. Por lo tanto, esta se cumple
+
+
+SO3 = GenerarSO3()
+
+for i in range (3):
+    for j in range (3):
+        if j != i:
+            for k in range (3):
+                if k != j and k != i:
+                    levi= SO3[k][j][i]
+                    conmutator= np.dot(SO3[i], SO3[j]) - np.dot(SO3[j], SO3[i])
+                    lie= levi*SO3[k]
+                    if (conmutator == lie).all() == False:
+                        print("falso")
+                        
+# No se imprimió "falso", por lo que si se cumple es el álgebra

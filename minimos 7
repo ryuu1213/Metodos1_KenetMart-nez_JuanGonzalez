@@ -1,0 +1,84 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+dat = pd.read_csv('https://raw.githubusercontent.com/asegura4488/Database/main/MetodosComputacionalesReforma/Sigmoid.csv')
+data = np.array(dat)
+x = data[:, 0]
+y = data[:, 1]
+
+
+def Ajuste (x, theta0, theta1, theta2):
+    return theta0 / (theta1 + (np.e**(-theta2*x)))
+
+def Costo (x, theta0, theta1, theta2):
+    sum_ = 0
+    for i in range (len(x)):
+        sum_ += ((y[i] - Ajuste(x[i], theta0, theta1, theta2)))**2
+    return sum_
+          
+        
+# De acuerdo a la regla de la cadena, la derivada de x^n es n*x^n-1 dx
+# Si es la función de costo, n es igual a 2, y dx es igual a menos la derivada de el ajuste. Todo esto respecto a cada coeficiente del ajuste
+
+def dt0 (theta, h= 0.001):
+    sum_ = 0
+    theta0 = theta[0]
+    theta1 = theta[1]
+    theta2 = theta[2]
+    for i in range (len(x)):
+        sum_ += (-2)*(y[i] - Ajuste(x[i], theta0, theta1, theta2))*((Ajuste(x, theta0 + h, theta1, theta2) - Ajuste(x, theta0 - h, theta1, theta2))/(2*h))
+    return sum_
+
+def dt1 (theta, h= 0.001):
+    sum_ = 0
+    theta0 = theta[0]
+    theta1 = theta[1]
+    theta2 = theta[2]
+    for i in range (len(x)):
+        sum_ += (-2)*(y[i] - Ajuste(x[i], theta0, theta1, theta2))*((Ajuste(x, theta0, theta1 + h, theta2) - Ajuste(x, theta0, theta1 - h, theta2))/(2*h))
+    return sum_
+
+def dt2 (theta, h= 0.001):
+    sum_ = 0
+    theta0 = theta[0]
+    theta1 = theta[1]
+    theta2 = theta[2]
+    for i in range (len(x)):
+        sum_ += (-2)*(y[i] - Ajuste(x[i], theta0, theta1, theta2))*((Ajuste(x, theta0, theta1, theta2 + h) - Ajuste(x, theta0, theta1, theta2 - h,))/(2*h))
+    return sum_
+    
+
+# El descendo de gradiente del costo se define como 0+1 = 0 + gamma*gradiente_0. 
+# En este caso, la gradiente del costo tiene un termino "constante", por lo que la gradiente que se utiliza es la gradiente del ajuste.
+
+def Gradiente (theta, h = 0.001):
+    g = np.array([dt0(theta), dt1(theta), dt2(theta)])
+    return g
+
+def Grad(x, theta0, theta1, theta2, h= 0.001):
+    d0 = (Costo(x, theta0 + h, theta1, theta2) - Costo(x, theta0 - h, theta1, theta2)) / (2*h)
+    d1 = (Costo(x, theta0, theta1 + h, theta2) - Costo(x, theta0, theta1 - h, theta2)) / (2*h)
+    d2 = (Costo(x, theta0, theta1, theta2 + h) - Costo(x, theta0, theta1, theta2 - h)) / (2*h)
+    grad = np.array([d0, d1, d2])
+    return grad
+
+gamma = 0.001
+theta = np.array([1,1,1])
+dif = np.array([1,1,1])
+e = 0.01
+itmax = 10000
+parametros = []
+while all(d < e for d in dif) == False:
+    theta = theta - (gamma * Grad(x, theta[0], theta[1], theta[2]))
+    parametros.append(theta)
+    theta1 = theta
+    theta2 = theta1 - (gamma * Grad(x, theta1[0], theta1[1], theta1[2]))
+    dif = theta1 - theta2
+
+par_finales = parametros[-1]
+x_ = np.linspace(-10,10,500)
+y_ = par_finales[0] + par_finales[1]*x_ + par_finales[2]*(x_**2)
+
+plt.scatter(x, y)
+plt.plot(x_, y_)

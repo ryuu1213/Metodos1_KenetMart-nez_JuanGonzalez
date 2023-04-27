@@ -1,0 +1,20 @@
+import numpy as np
+
+
+def PotenciaInversa (M, v, itmax = 1000):
+    u= v.copy()
+    Min = np.linalg.inv(M)
+    it = 0
+    while it < itmax:
+        it += 1
+        un = (np.dot(Min, u)) / (np.linalg.norm(u))
+        u = un
+    lamda = 1 / (np.linalg.norm(u))
+    vector = u / (np.linalg.norm(u))
+    return lamda, vector
+
+M = np.array(([1,2,-1], [1,0,1], [4,-4,5]))
+v = np.array([1,1,1])
+
+
+print(PotenciaInversa(M, v))

@@ -1,0 +1,113 @@
+import numpy as np
+
+def Maximo (M):
+    maximo= M[0][1]
+    n= 0
+    m= 1
+    for i in range (M.shape[0]):
+        for j in range(M.shape[1]):
+            if i != j:
+                if i < j:
+                    prueba = M[i][j]
+                    if prueba > maximo:
+                        maximo = prueba
+                        n= i
+                        m= j
+    return n, m
+
+
+def ProductoMatrices(A,B):
+    n= A.shape[0]
+    m= B.shape[1]
+    Producto= np.zeros((n,m))
+    l= A.shape[1]
+    for i in range(n):
+        for j in range(m):
+            valor = 0
+            for k in range(l):
+                valor += A[i,k] * B[k,j]
+            Producto[i,j] = valor
+                
+    return Producto
+
+
+def JacobiEigen(M):
+    a1= round(M[0][1],3)
+    a2= round(M[0][2],3)
+    a3= round(M[1][2],3)
+    while a1 != 0 and a2 != 0 and a3 != 0:
+        J= np.identity(3)
+        n, m = Maximo(M)
+        if M[n][n] == M[m][m]:
+            theta= np.pi / 4
+        else:
+            theta = (0.5) * (np.arctan( (2*M[n][m]) / (M[n][n] - M[m][m])))
+        J[n][m] = np.sin(theta)
+        J[m][n] = -(np.sin(theta))
+        J[n][n] = np.cos(theta)
+        J[m][m] = np.cos(theta)
+        Ji = np.linalg.inv(J)
+        A = ProductoMatrices(Ji, M)
+        M = ProductoMatrices(A, J)
+        a1= round(M[0][1],5)
+        a2= round(M[0][2],5)
+        a3= round(M[1][2],5)
+        
+    values= []
+    for i in range(M.shape[0]):
+        for j in range(M.shape[1]):
+            if i == j:
+                values.append(M[i][j])
+            
+    return values
+
+A = np.array(([4,1,1], [1,3,2], [1,2,5]))
+
+print(JacobiEigen(A))
+print(np.linalg.eig(A)[0])
+
+
+
+"""
+
+def Jacobi(A,b,x0, itmax=1000, tolerancia= 1e-9):
+    
+    x = x0.copy()
+    
+    for it in range(itmax):
+        
+        xn = np.zeros_like(x0)
+        
+        for i in range(A.shape[0]):
+            
+            sum_ = 0.
+            
+            for j in range(A.shape[1]):
+                
+                if j!=i:
+                    sum_ += A[i,j]*x[j]
+                    
+            xn[i] = (b[i] - sum_)/A[i,i]
+            
+        print(it,xn)
+        
+        residuo = np.linalg.norm( np.dot(A,xn) - b )
+        x = xn.copy()
+        #print(residuo)
+        
+        if np.allclose(residuo,tolerancia,atol=tolerancia):
+            break
+        
+    return x
+
+
+    H = M.copy()
+
+    vectors= []
+    for j in range(len(values)):
+        H = H - (values[j] * np.identity(3))
+        b = np.zeros(3)
+        x0 = np.zeros(3)
+        vector= Jacobi(H, b, x0)
+        vectors.append(vector)
+        """

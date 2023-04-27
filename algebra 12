@@ -1,0 +1,47 @@
+import numpy as np
+
+
+def JacobianoH4(f1, f2, f3, x, h):
+    J= np.zeros((3,3))
+    fi = None
+    for i in range (3):
+        if i == 0:
+            fi= f1
+        if i == 1:
+            fi = f2
+        if i == 2:
+            fi = f3
+        J[i][0] = (-fi(x[0]+2*h, x[1], x[2]) + 8*fi(x[0]+h, x[1], x[2]) - 8*fi(x[0]-h, x[1], x[2]) + fi(x[0]-2*h, x[1], x[2])) / (12*h)
+        J[i][1] = (-fi(x[0], x[1]+2*h, x[2]) + 8*fi(x[0], x[1]+h, x[2]) - 8*fi(x[0], x[1]-h, x[2]) + fi(x[0], x[1]-2*h, x[2])) / (12*h)
+        J[i][2] = (-fi(x[0], x[1], x[2]+2*h) + 8*fi(x[0], x[1], x[2]+h) - 8*fi(x[0], x[1], x[2]-h) + fi(x[0], x[1], x[2]-2*h)) / (12*h)
+    return J
+
+
+f1 = lambda x1, x2, x3: 6*x1 + 2*(np.cos(x2*x3)) -1
+f2 = lambda x1, x2, x3: 9*x2 + np.sqrt((x1**2) + np.sin(x3) + 1.06) + 0.9
+f3 = lambda x1, x2, x3: 60*x3 + 3*(np.e**(-x1*x2)) + 10*np.pi - 3
+
+x = np.array([0.5, 0.5, 0.5])
+h= 0.01
+
+JH4 = JacobianoH4(f1, f2, f3, x, h)
+print(JH4)
+
+def JacobianoH2(f1, f2, f3, x, h):
+    J= np.zeros((3,3))
+    fi = None
+    for i in range (3):
+        if i == 0:
+            fi= f1
+        if i == 1:
+            fi = f2
+        if i == 2:
+            fi = f3
+        J[i][0] = (fi(x[0]+h, x[1], x[2]) - fi(x[0]-h, x[1], x[2])) / (2*h)
+        J[i][1] = (fi(x[0], x[1]+h, x[2]) - fi(x[0], x[1]-h, x[2])) / (2*h)
+        J[i][2] = (fi(x[0], x[1], x[2]+h) - fi(x[0], x[1], x[2]-h)) / (2*h)
+    return J
+
+print(JacobianoH2(f1, f2, f3, x, h))
+
+# La precisión de ambos operadores será igual cuando los errores de ambos también lo sea
